@@ -47,6 +47,9 @@ def user_login(request):
 
 @login_required(redirect_field_name='next', login_url='/admin-login/')
 def dashboard(request):
+
+    undelivered_purchases = Purchase.objects.filter(delivered=False).count()
+
      # Total number of registered books
     total_books = Book.objects.count()
     
@@ -55,12 +58,14 @@ def dashboard(request):
     
     # Total purchase amount in dollars
     total_purchase_amount = Purchase.objects.aggregate(Sum('book__price'))['book__price__sum'] or 0
+    total_purchase_amount = f"{total_purchase_amount:.2f}"
 
     # Context data for the template
     context = {
         'total_books': total_books,
         'total_purchased_books': total_purchased_books,
-        'total_purchase_amount': total_purchase_amount
+        'total_purchase_amount': total_purchase_amount,
+        "undelivered_purchases": undelivered_purchases,
     }
 
     return render(request, "admin_page/dashboard.html", context)
@@ -68,6 +73,9 @@ def dashboard(request):
 
 @login_required(redirect_field_name='next', login_url='/admin-login/')
 def Add_book(request):
+
+    undelivered_purchases = Purchase.objects.filter(delivered=False).count()
+    
     if request.method == "POST":
         title = request.POST.get("title")
         author = request.POST.get("author")
@@ -77,7 +85,6 @@ def Add_book(request):
         published_date = request.POST.get("published_date")
         cover_image = request.POST.get("image_url")
 
-        # Create and save the new book instance
         book = Book(
             title=title,
             author=author,
@@ -89,28 +96,42 @@ def Add_book(request):
         )
         book.save()
 
-        # Show success message
         messages.success(request, "Book added successfully!")
 
-        return redirect("add-book")  # Redirect to the same page or another view
+        return redirect("add-book")
 
-    return render(request, "admin_page/add-book.html")
+    return render(request, "admin_page/add-book.html", {"undelivered_purchases": undelivered_purchases})
 
 
 @login_required(redirect_field_name='next', login_url='/admin-login/')
 def display_book(request):
 
-    books = Book.objects.all()  # Fetch all books from the database
-    return render(request, "admin_page/display_books.html", {"books": books})
+    undelivered_purchases = Purchase.objects.filter(delivered=False).count()
+
+    books = Book.objects.all()
+    return render(request, "admin_page/display_books.html", {"books": books, "undelivered_purchases": undelivered_purchases})
+
+@login_required(redirect_field_name='next', login_url='/admin-login/')
+def purchase_list(request):
+
+    undelivered_purchases = Purchase.objects.filter(delivered=False).count()
+    
+    all_purchases = Purchase.objects.all()
+    
+    context = {
+        'undelivered_purchases': undelivered_purchases,
+        'all_purchases': all_purchases,
+    }
+    return render(request, "admin_page/display_purchase.html", context)
+
 
 class BookUpdateView(LoginRequiredMixin, UpdateView):
     model = Book
     template_name = "admin_page/update-book.html"
     fields = ["title", "author", "category", "description", "price"]
-    success_url = reverse_lazy("display-book")  # Redirect to the book list view or any desired page
+    success_url = reverse_lazy("display-book")
     
-    # Define the URL to redirect to for unauthenticated users
-    login_url = '/admin-login/'  # Custom login URL for unauthorized users
+    login_url = '/admin-login/'
 
     def form_valid(self, form):
         messages.success(self.request, "Book updated successfully.")
@@ -119,11 +140,14 @@ class BookUpdateView(LoginRequiredMixin, UpdateView):
 @login_required(redirect_field_name='next', login_url='/admin-login/')
 def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
+    
+    undelivered_purchases = Purchase.objects.filter(delivered=False).count()
+
     if request.method == "POST":
         book.delete()
         messages.success(request, "Book deleted successfully.")
         return redirect("display-book")
-    return render(request, "admin_page/display_books.html", {"book": book})
+    return render(request, "admin_page/display_books.html", {"book": book, "undelivered_purchases": undelivered_purchases})
 
 
 def stripe_checkout(request, book_id):
@@ -131,11 +155,10 @@ def stripe_checkout(request, book_id):
         get_book = get_object_or_404(Book, pk=book_id)
 
         if get_book.price <= 0:
-            return redirect("index")  # Redirect or handle the error accordingly
+            return redirect("index")
 
         book_price_in_cent = int(get_book.price * 100)
 
-        # Create a Stripe Checkout Session
         stripe_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[
@@ -161,18 +184,18 @@ def stripe_checkout(request, book_id):
                 "book_author": str(get_book.author),
                 "book_price": str(get_book.price),
                 "book_img": str(get_book.cover_image),
-            },  # Ensure book_id is a string
-            # Collect the customer's email from the Stripe Checkout form
-            customer_email=request.POST.get('email'),  # Get email from the request
-            billing_address_collection='required',  # Require the customer to provide their address
-            phone_number_collection={'enabled': True},  # Enable phone number collection
+            },
+
+            customer_email=request.POST.get('email'),
+            billing_address_collection='required',
+            phone_number_collection={'enabled': True},
         )
 
         return redirect(stripe_session.url)
 
     except stripe.error.StripeError as e:
         print("Exception: ", e)
-        return redirect("index")  # Redirect or handle the error appropriately
+        return redirect("index")
 
 
 
@@ -203,25 +226,23 @@ def webhook_manager(request):
 
 
 def manage_checkout_session(stripe_session):
-    # Retrieve book ID from the metadata
-    book_id = stripe_session["metadata"].get("book_id")  # Use .get() to avoid KeyError
 
-    # Retrieve user email from the session
+    book_id = stripe_session["metadata"].get("book_id")
+
     user_email = stripe_session["customer_details"][
         "email"
-    ]  # This will be retrieved from Stripe's email field
+    ]
 
-    if user_email and book_id:  # Ensure both values are present
-        # Create the Purchase object
+    if user_email and book_id:
         purchase = Purchase(
             user_email=user_email,
             fullname = stripe_session["customer_details"]["name"],
             phone_number = stripe_session["customer_details"]["phone"],
             address = stripe_session["customer_details"]["address"]["city"],
             zip_code = stripe_session["customer_details"]["address"]["postal_code"],
-            book_id=book_id,  # Assuming you have a ForeignKey to Book
+            book_id=book_id,
         )
-        purchase.save()  # Save the Purchase object
+        purchase.save()
 
         subject = "Purchase Confirmation"
         context = {
@@ -232,38 +253,45 @@ def manage_checkout_session(stripe_session):
         }
         message = render_to_string("admin_page/purchase_email.html", context)
 
-        # Send the email
         send_mail(
             subject,
             message,
             settings.EMAIL_HOST_USER,
-            [user_email],  # Send to the customer's email
+            [user_email],
             fail_silently=False,
-            html_message=message,  # This allows for HTML content
+            html_message=message,
         )
     else:
-        # Handle the case where email or book_id is not available
         print("Purchase could not be created. Missing user_email or book_id.")
 
 
 class PaymentSuccessView(TemplateView):
     template_name = "admin_page/payment-success.html"
 
-    # You can also add context if needed
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
 
 class PaymentCancelView(TemplateView):
-    template_name = "admin_page/payment-cancel.html"  # The template to render
+    template_name = "admin_page/payment-cancel.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["message"] = "Your payment has been canceled."  # Example context data
+        context["message"] = "Your payment has been canceled."
         return context
 
 @login_required(login_url='/admin-login/')
 def user_logout(request):
+
     logout(request)
-    return redirect('login-page')  # Redirect to login page or any other page after logout
+
+    return redirect('login-page')
+
+@login_required(redirect_field_name='next', login_url='/admin-login/')
+def mark_as_delivered(request, purchase_id):
+    purchase = get_object_or_404(Purchase, id=purchase_id)
+    purchase.delivered = True  # Mark as delivered
+    purchase.save()
+    messages.success(request, "The book has been marked as delivered.")
+    return redirect('purchase-list')

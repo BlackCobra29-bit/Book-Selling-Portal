@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from App.views import Index, Add_book, display_book, BookUpdateView, delete_book, PaymentSuccessView, PaymentCancelView, stripe_checkout, webhook_manager, user_login, dashboard, user_logout
+from App.views import Index, Add_book, display_book, BookUpdateView, delete_book, PaymentSuccessView, mark_as_delivered, PaymentCancelView, stripe_checkout, webhook_manager, user_login, dashboard, purchase_list, user_logout
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path("dashboard/", dashboard, name="app-dashboard"),
     path("add-books/", Add_book, name="add-book"),
     path("display-books/", display_book, name="display-book"),
+    path("purchased-books/", purchase_list, name="purchase-list"),
     path('book/update/<int:pk>/', BookUpdateView.as_view(), name='update_book'),
     path('delete_book/<int:pk>/', delete_book, name='delete_book'),
     path("payment-success/", PaymentSuccessView.as_view(), name = "payment-success"),
@@ -34,4 +35,5 @@ urlpatterns = [
     path("checkout/<int:book_id>", stripe_checkout, name="stripe-checkout"),
     path("stripe-webhook", webhook_manager, name = "webhook-manager"),
     path("logout", user_logout, name = "user-logout"),
+    path('purchase/mark-as-delivered/<int:purchase_id>/', mark_as_delivered, name='mark_as_delivered'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

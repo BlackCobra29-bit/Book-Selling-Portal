@@ -49,7 +49,9 @@
               <a href="{% url 'display-book' %}" class="nav-link"><span class="fa fa-book"></span> Display</a>
             </li>
             <li class="nav-item">
-              <a href="index3.html" class="nav-link"><span class="fa fa-bell"></span> Purchase</a>
+              <a href="{% url 'purchase-list' %}" class="nav-link"><span class="fa fa-bell"></span>
+                Purchase <span class="badge badge-danger">{{ undelivered_purchases }}</span>
+              </a>
             </li>
           </ul>
         </div>
@@ -57,7 +59,7 @@
         <!-- Right navbar links -->
         <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
           <li class="nav-item">
-            <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="{% url 'user-logout' %}" role="button">
+            <a class="nav-link" href="{% url 'user-logout' %}">
               <i class="fas fa-sign-out-alt"></i> Logout
             </a>
           </li>

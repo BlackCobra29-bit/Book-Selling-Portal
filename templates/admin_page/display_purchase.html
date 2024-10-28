@@ -1,0 +1,113 @@
+{% extends 'admin_page/base.html' %}
+{% load static %}
+
+{% block page-block %}
+
+<style>
+    .btn-xs {
+        padding: 2px 5px;
+        font-size: 0.75rem;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0"><span class="fa fa-dollar-sign"></span> Purchased Books</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-10">
+                    <div class="card card-default">
+                        <div class="card-body">
+                            <table id="example1" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Index</th>
+                                        <th>Full Name</th>
+                                        <th>User Email</th>
+                                        <th>User Phone</th>
+                                        <th>User Address</th>
+                                        <th>Postal Code</th>
+                                        <th>Book Title</th>
+                                        <th>Amount Paid</th>
+                                        <th>Purchase Date</th>
+                                        <th>Delivery</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for purchase in all_purchases %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ purchase.fullname }}</td>
+                                        <td>{{ purchase.user_email }}</td>
+                                        <td>{{ purchase.phone_number }}</td>
+                                        <td>{{ purchase.address }}</td>
+                                        <td>{{ purchase.zip_code }}</td>
+                                        <td>{{ purchase.book.title }}</td>
+                                        <td><strong class="text-success">${{ purchase.book.price }}</strong></td>
+                                        <td>{{ purchase.purchase_date }}</td>
+                                        <td>
+                                            {% if not purchase.delivered %}
+                                                <a href="#" data-toggle="modal" data-target="#deliverModal{{ purchase.id }}">
+                                                    <span class="badge badge-warning">Not Delivered</span>
+                                                </a>
+                                            {% else %}
+                                                <span class="badge badge-success">Delivered</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+
+                                    <!-- Delivery Confirmation Modal -->
+                                    <div class="modal fade" id="deliverModal{{ purchase.id }}" tabindex="-1" aria-labelledby="deliverModalLabel{{ purchase.id }}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deliverModalLabel{{ purchase.id }}">Confirm Delivery</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to mark the book titled "{{ purchase.book.title }}" as delivered?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                    <form method="POST" action="{% url 'mark_as_delivered' purchase.id %}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-success">Mark as Delivered</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
