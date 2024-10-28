@@ -1,0 +1,30 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Purchase Confirmation</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="alert alert-success">
+            <h4 class="alert-heading text-center">Purchase Successful!</h4>
+            <p>Dear {{ customer_name }},</p>
+            <p>Thank you for your purchase of <strong>{{ book_title }}</strong>.</p>
+            <hr>
+            <div class="text-center">
+                <img src="{{ book_image }}" alt="{{ book_title }}" class="img-fluid" style="max-width: 200px;">
+            </div>
+            <p><strong>Order Details:</strong></p>
+            <p><strong>Book Title:</strong> {{ book_title }}</p>
+            <p><strong>Author:</strong> {{ author }}</p>
+            <p><strong>Price:</strong> ${{ price }}</p>
+            <p>Your order has been processed successfully. You can access your purchase in your account.</p>
+            <p>Thank you for supporting our work!</p>
+        </div>
+    </div>
+</body>
+</html>

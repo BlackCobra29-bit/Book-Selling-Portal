@@ -72,81 +72,34 @@
 
           <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
             <li data-filter="*" class="filter-active">All</li>
-            <li data-filter=".filter-app">App</li>
-            <li data-filter=".filter-product">Product</li>
-            <li data-filter=".filter-branding">Branding</li>
-            <li data-filter=".filter-books">Books</li>
+            <li data-filter=".filter-Fiction">Fiction</li>
+            <li data-filter=".filter-Non-Fiction">Non-Fiction</li>
+            <li data-filter=".filter-Science">Science</li>
+            <li data-filter=".filter-History">History</li>
+            <li data-filter=".filter-Biography">Biography</li>
+            <li data-filter=".filter-Fantasy">Fantasy</li>
           </ul><!-- End Portfolio Filters -->
 
           <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
 
-            <div class="col-lg-3 col-md-6 portfolio-item isotope-item filter-app">
+            {% for book in books %}
+            <div class="col-lg-3 col-md-6 portfolio-item isotope-item filter-{{ book.category }}">
               <div class="portfolio-content h-100 shadow-sm p-3 mb-5 bg-white rounded">
-                <a href="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" data-gallery="portfolio-gallery-app" class="glightbox d-flex justify-content-center mb-3">
-                  <img src="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" class="img-fluid" style="height: 200px; width: 80%;" alt="Book Cover">
+                <a href="{{ book.cover_image }}" data-gallery="portfolio-gallery-app" class="glightbox d-flex justify-content-center mb-3">
+                  <img src="{{ book.cover_image }}" class="img-fluid" style="height: 200px; width: 80%;" alt="Book Cover">
                 </a>
                 <div class="portfolio-info text-center">
-                  <span class="text-muted d-block mb-3">Author: Eric Mathes</span>
+                  <span class="text-muted d-block mb-3">Author: {{ book.author }}</span>
                   <div class="social">
-                    <button class="btn btn-warning btn-sm px-4">
+                    <a href="{% url 'stripe-checkout' book.id %}" class="btn btn-warning btn-sm px-4">
                       <i class="bi bi-cart4"></i> Buy Book
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- End Portfolio Item -->            
-
-            <div class="col-lg-3 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100 shadow-sm p-3 mb-5 bg-white rounded">
-                <a href="{% static 'img/519QwuI5qKL._SX342_SY445_.jpg' %}" data-gallery="portfolio-gallery-app" class="glightbox d-flex justify-content-center mb-3">
-                  <img src="{% static 'img/519QwuI5qKL._SX342_SY445_.jpg' %}" class="img-fluid" style="height: 200px; width: 80%;" alt="Book Cover">
-                </a>
-                <div class="portfolio-info text-center">
-                  <span class="text-muted d-block mb-3">Author: Eric Mathes</span>
-                  <div class="social">
-                    <button class="btn btn-warning btn-sm px-4">
-                      <i class="bi bi-cart4"></i> Buy Book
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- End Portfolio Item -->   
-
-            <div class="col-lg-3 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100 shadow-sm p-3 mb-5 bg-white rounded">
-                <a href="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" data-gallery="portfolio-gallery-app" class="glightbox d-flex justify-content-center mb-3">
-                  <img src="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" class="img-fluid" style="height: 200px; width: 80%;" alt="Book Cover">
-                </a>
-                <div class="portfolio-info text-center">
-                  <span class="text-muted d-block mb-3">Author: Eric Mathes</span>
-                  <div class="social">
-                    <button class="btn btn-warning btn-sm px-4">
-                      <i class="bi bi-cart4"></i> Buy Book
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
             <!-- End Portfolio Item --> 
-
-            <div class="col-lg-3 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100 shadow-sm p-3 mb-5 bg-white rounded">
-                <a href="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" data-gallery="portfolio-gallery-app" class="glightbox d-flex justify-content-center mb-3">
-                  <img src="{% static 'img/71pys4B4OVL._SY522_.jpg' %}" class="img-fluid" style="height: 200px; width: 80%;" alt="Book Cover">
-                </a>
-                <div class="portfolio-info text-center">
-                  <span class="text-muted d-block mb-3">Author: Eric Mathes</span>
-                  <div class="social">
-                    <button class="btn btn-warning btn-sm px-4">
-                      <i class="bi bi-cart4"></i> Buy Book
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- End Portfolio Item -->   
+            {% endfor %}
 
           </div><!-- End Portfolio Container -->
 

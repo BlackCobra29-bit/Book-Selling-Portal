@@ -16,10 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from App.views import Index, Dashboard
+from App.views import Index, Add_book, display_book, BookUpdateView, delete_book, PaymentSuccessView, PaymentCancelView, stripe_checkout, webhook_manager, user_login, dashboard, user_logout
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", Index, name="index"),
-    path("dashboard/", Dashboard, name="dashboard")
-]
+    path("admin-login/", user_login, name="login-page"),
+    path("dashboard/", dashboard, name="app-dashboard"),
+    path("add-books/", Add_book, name="add-book"),
+    path("display-books/", display_book, name="display-book"),
+    path('book/update/<int:pk>/', BookUpdateView.as_view(), name='update_book'),
+    path('delete_book/<int:pk>/', delete_book, name='delete_book'),
+    path("payment-success/", PaymentSuccessView.as_view(), name = "payment-success"),
+    path('payment-cancel/', PaymentCancelView.as_view(), name='payment-cancel'),
+    path("checkout/<int:book_id>", stripe_checkout, name="stripe-checkout"),
+    path("stripe-webhook", webhook_manager, name = "webhook-manager"),
+    path("logout", user_logout, name = "user-logout"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

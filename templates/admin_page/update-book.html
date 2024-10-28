@@ -1,0 +1,105 @@
+{% extends 'admin_page/base.html' %}
+
+{% load static %}
+
+{% block page-block %}
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0"><span class="fa fa-edit"></span> Update Book</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5>{{ message }}</h5>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-1"></div>
+                <div class="col-lg-10">
+                    <div class="card card-default">
+                        <form method="POST" enctype="multipart/form-data" id="update_book_form">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="title">Book Title: <code>*</code></label>
+                                            <input type="text" class="form-control" id="title" name="title"
+                                                value="{{ form.title.value }}" placeholder="Enter book title" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="author">Author: <code>*</code></label>
+                                            <input type="text" class="form-control" id="author" name="author"
+                                                value="{{ form.author.value }}" placeholder="Enter author name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="category">Category: <code>*</code></label>
+                                            <select class="form-control" id="category" name="category" required>
+                                                <option value="" disabled>Select book category</option>
+                                                <option value="Fiction" {% if form.category.value == "Fiction" %}selected{% endif %}>Fiction</option>
+                                                <option value="Non-Fiction" {% if form.category.value == "Non-Fiction" %}selected{% endif %}>Non-Fiction</option>
+                                                <option value="Science" {% if form.category.value == "Science" %}selected{% endif %}>Science</option>
+                                                <option value="History" {% if form.category.value == "History" %}selected{% endif %}>History</option>
+                                                <option value="Biography" {% if form.category.value == "Biography" %}selected{% endif %}>Biography</option>
+                                                <option value="Fantasy" {% if form.category.value == "Fantasy" %}selected{% endif %}>Fantasy</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="price">Price: <code>*</code></label>
+                                            <input type="number" class="form-control" id="price" name="price"
+                                                value="{{ form.price.value }}" placeholder="Enter book price" step="0.01" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="description">Description: <code>*</code></label>
+                                            <textarea class="form-control" rows="6" id="description" name="description"
+                                                placeholder="Enter book description" required>{{ form.description.value }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer float-right custom-footer">
+                                <button type="submit" class="btn btn-primary">Update Book</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<style>
+    .custom-footer {
+        background-color: transparent;
+        border-top: none;
+        padding: 0;
+    }
+</style>

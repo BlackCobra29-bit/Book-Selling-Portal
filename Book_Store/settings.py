@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'App'
 ]
 
 MIDDLEWARE = [
@@ -122,7 +123,20 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tekalyshgute@gmail.com'
+EMAIL_HOST_PASSWORD = 'uixo hcnw afjg rfkq'
+
+# Set the Stripe API keys
+STRIPE_PUBLISHABLE_KEY = "pk_test_51OIB3vDukDI7g1h0sDzi3Mx2oRzARIoiDmuBoYcxh5bpPuiSWM9FmzWvkW3q8CWOoEhtpjxTzUEuCpoEN6H23Qef00pv6Iqe1b"
+STRIPE_SECRET_KEY = "sk_test_51OIB3vDukDI7g1h0VREjlwcJc3ZHniPtQESOjgm4MSTVOyjX6Vo9KzRJzfZNDkDAlsmzFVG84IkjlJ7CdXLktpLP001kF8LGZC"
+STRIPE_WEBHOOK_SECRET = "whsec_e2e5aaae0e26a925dd59a934247ce737e5e61fdbfb163c4c773ffd0c1bbefd74"

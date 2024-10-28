@@ -1,0 +1,84 @@
+{% extends 'admin_page/base.html' %}
+
+{% load static %}
+
+{% block page-block %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"><span class="fa fa-home"></span> Home</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container">
+      
+          
+      <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ total_books }}</h3>
+                <strong>Total Books</strong>
+              </div>
+              <div class="icon">
+                <i class="fas fa-book"></i> <!-- Book icon for Total Books -->
+              </div>
+              <a href="{% url 'display-book' %}" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+              </a>
+            </div>
+          </div>
+          <!-- ./col -->
+          
+          <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ total_purchased_books }}</h3>
+                <strong>Total Purchased Books</strong>
+              </div>
+              <div class="icon">
+                <i class="fas fa-shopping-cart"></i> <!-- Shopping cart for purchased books -->
+              </div>
+              <a href="" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+              </a>
+            </div>
+          </div>
+          <!-- ./col -->
+          
+          <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>${{ total_purchase_amount }}</h3> <!-- Currency symbol -->
+                <strong>Total Purchase Amount</strong>
+              </div>
+              <div class="icon">
+                <i class="fas fa-dollar-sign"></i> <!-- Dollar sign for purchase amount -->
+              </div>
+              <a href="" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+              </a>
+            </div>
+          </div>
+          <!-- ./col -->          
+      </div>
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
